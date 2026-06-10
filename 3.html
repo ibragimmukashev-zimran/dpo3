@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Helpdesk – Ticket #67676767</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet"/>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['DM Sans', 'sans-serif'] },
+        colors: {
+          brand: { DEFAULT:'#4f46e5', light:'#6366f1', pale:'#eef2ff' },
+          slate: {
+            50:'#f8fafc', 100:'#f1f5f9', 200:'#e2e8f0',
+            300:'#cbd5e1', 400:'#94a3b8', 500:'#64748b',
+            600:'#475569', 700:'#334155', 800:'#1e293b', 900:'#0f172a'
+          }
+        }
+      }
+    }
+  }
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: #f1f5f9; }
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+  .nav-icon { transition: all .18s ease; }
+  .nav-icon:hover { background: rgba(255,255,255,.15); color: #fff; }
+  .nav-icon.active { background: rgba(255,255,255,.18); color: #fff; }
+
+  .action-btn {
+    display:inline-flex; align-items:center; gap:6px;
+    padding: 6px 14px; border-radius:7px; font-size:.82rem; font-weight:500;
+    border: 1px solid #e2e8f0; background:#fff; color:#334155;
+    cursor:pointer; transition: all .15s ease;
+  }
+  .action-btn:hover { background:#f8fafc; border-color:#cbd5e1; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  .action-btn.primary { background:#4f46e5; color:#fff; border-color:#4f46e5; }
+  .action-btn.primary:hover { background:#4338ca; border-color:#4338ca; }
+  .action-btn.danger { background:#fee2e2; color:#b91c1c; border-color:#fca5a5; }
+  .action-btn.danger:hover { background:#fecaca; }
+
+  .field-label { font-size:.75rem; font-weight:600; color:#475569; margin-bottom:5px; letter-spacing:.02em; }
+  .required-star { color:#ef4444; margin-left:2px; }
+
+  .form-input, .form-select {
+    width:100%; padding:7px 10px; border-radius:7px; font-size:.8rem; font-weight:400;
+    border: 1px solid #e2e8f0; background:#fff; color:#1e293b;
+    outline:none; transition: border-color .15s, box-shadow .15s;
+    appearance: none; -webkit-appearance: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .form-input:focus, .form-select:focus {
+    border-color:#6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,.1);
+  }
+  .select-wrapper { position:relative; }
+  .select-wrapper::after {
+    content:''; position:absolute; right:10px; top:50%; transform:translateY(-50%);
+    width:0; height:0; border-left:4px solid transparent;
+    border-right:4px solid transparent; border-top:5px solid #94a3b8;
+    pointer-events:none;
+  }
+  .form-select { padding-right:28px; cursor:pointer; }
+
+  .tag-chip {
+    display:inline-flex; align-items:center; gap:5px;
+    background:#e0e7ff; color:#4338ca; border-radius:5px;
+    padding:3px 8px; font-size:.72rem; font-weight:600;
+  }
+  .tag-chip button { background:none; border:none; cursor:pointer; color:#6366f1; line-height:1; padding:0; font-size:14px; }
+  .tag-chip button:hover { color:#b91c1c; }
+
+  .sidebar-section { border-bottom:1px solid #e2e8f0; }
+  .sidebar-section-header {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 14px; cursor:pointer; user-select:none;
+    font-size:.78rem; font-weight:600; color:#334155;
+    transition: background .15s;
+  }
+  .sidebar-section-header:hover { background:#f8fafc; }
+  .chevron { transition: transform .2s ease; }
+  .collapsed .chevron { transform: rotate(-90deg); }
+
+  .timeline-dot { width:8px; height:8px; border-radius:50%; background:#4f46e5; margin-top:4px; flex-shrink:0; }
+
+  .note-block {
+    border-left:3px solid #f59e0b; background:#fffbeb;
+    border-radius:0 8px 8px 0; padding:12px 14px; margin:8px 0;
+  }
+  .warning-label {
+    display:inline-block; background:#ef4444; color:#fff;
+    font-size:.68rem; font-weight:700; border-radius:3px; padding:1px 6px;
+    letter-spacing:.04em; margin-right:6px;
+  }
+
+  .msg-card { background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:16px 18px; margin-bottom:12px; }
+  .avatar { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:700; flex-shrink:0; }
+
+  .update-btn {
+    width:100%; padding:9px; border-radius:8px; background:#6366f1;
+    color:#fff; border:none; cursor:pointer; font-size:.83rem; font-weight:600;
+    font-family:'DM Sans',sans-serif; transition:background .15s;
+    margin-top:8px;
+  }
+  .update-btn:hover { background:#4f46e5; }
+
+  .sla-badge { display:flex; align-items:center; gap:6px; font-size:.74rem; padding:5px 8px; border-radius:6px; }
+  .dot-red { width:7px; height:7px; border-radius:50%; background:#ef4444; flex-shrink:0; }
+  .dot-green { width:7px; height:7px; border-radius:50%; background:#22c55e; flex-shrink:0; }
+
+  .updated-text { color:#16a34a; font-size:.72rem; font-weight:600; margin-top:3px; }
+
+  .priority-urgent { color:#dc2626; }
+  .priority-dot { width:9px; height:9px; border-radius:50%; background:#dc2626; display:inline-block; margin-right:5px; }
+</style>
+</head>
+<body class="h-screen overflow-hidden flex">
+
+<!-- ─── LEFT NAV ─────────────────────────────────────────────────────── -->
+<nav class="w-14 flex-shrink-0 bg-slate-800 flex flex-col items-center py-3 gap-1 z-10">
+  <!-- Logo -->
+  <div class="w-9 h-9 mb-3 flex items-center justify-center">
+    <svg viewBox="0 0 36 36" fill="none" class="w-9 h-9">
+      <rect width="36" height="36" rx="8" fill="#6366f1"/>
+      <text x="18" y="24" text-anchor="middle" fill="white" font-size="13" font-weight="700" font-family="DM Sans">Z</text>
+    </svg>
+  </div>
+
+  <!-- Nav items -->
+  <button class="nav-icon w-9 h-9 rounded-lg flex items-center justify-center text-slate-400">
+    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+  </button>
+  <button class="nav-icon active w-9 h-9 rounded-lg flex items-center justify-center text-slate-300">
+    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+  </button>
+  <button class="nav-icon w-9 h-9 rounded-lg flex items-center justify-center text-slate-400">
+    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+  </button>
+  <button class="nav-icon w-9 h-9 rounded-lg flex items-center justify-center text-slate-400">
+    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+  </button>
+  <button class="nav-icon w-9 h-9 rounded-lg flex items-center justify-center text-slate-400">
+    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+  </button>
+
+  <div class="flex-1"></div>
+
+  <button class="nav-icon w-9 h-9 rounded-lg flex items-center justify-center text-slate-400">
+    <svg class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+  </button>
+  <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs font-bold mb-1">IB</div>
+</nav>
+
+<!-- ─── MAIN WRAPPER ──────────────────────────────────────────────────── -->
+<div class="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+
+  <!-- Top App Bar -->
+  <header class="bg-white border-b border-slate-200 px-5 py-2.5 flex items-center justify-between flex-shrink-0">
+    <div class="flex items-center gap-2 text-sm">
+      <span class="font-semibold text-indigo-600">Assigned tickets to CX Agent</span>
+      <span class="text-slate-400">›</span>
+      <span class="font-bold text-slate-700">67676767</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button class="action-btn primary text-xs">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+        New
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <button class="action-btn">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+        Search
+      </button>
+      <button class="relative action-btn px-2.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-bold" style="font-size:9px">3</span>
+      </button>
+      <button class="action-btn px-2.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </button>
+      <button class="action-btn px-2.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+      </button>
+      <button class="action-btn">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+        Apps
+      </button>
+    </div>
+  </header>
+
+  <!-- Ticket Toolbar -->
+  <div class="bg-white border-b border-slate-200 px-5 py-2 flex items-center justify-between flex-shrink-0">
+    <div class="flex items-center gap-1">
+      <button class="nav-icon w-8 h-8 rounded text-slate-400 flex items-center justify-center">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+      </button>
+      <button class="action-btn">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        Forward
+      </button>
+      <button class="action-btn danger">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        Close
+      </button>
+      <button class="nav-icon w-8 h-8 rounded text-slate-400 flex items-center justify-center">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"/></svg>
+      </button>
+    </div>
+    <div class="flex items-center gap-2">
+      <button class="action-btn text-xs">Threads</button>
+      <button class="action-btn px-2.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+      </button>
+      <button class="action-btn text-xs">
+        <svg class="w-3.5 h-3.5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        Activities
+      </button>
+      <button class="action-btn px-2.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Three-column body -->
+  <div class="flex flex-1 min-h-0 overflow-hidden">
+
+    <!-- ── CENTER THREAD ──────────────────────────────────────────── -->
+    <main class="flex-1 min-w-0 flex flex-col overflow-hidden border-r border-slate-200">
+
+      <!-- Thread scroll area -->
+      <div id="threadContainer" class="flex-1 overflow-y-auto px-5 py-4 space-y-4 bg-slate-50">
+
+        <!-- Ticket Subject Header -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm px-5 py-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
+              <svg class="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+            <h2 class="text-lg font-bold text-slate-800">Data Erasure Request from ramafahla.thamae@gmail.com</h2>
+          </div>
+          <button id="topSummaryBtn" onclick="toggleSummaryBox()" class="action-btn text-xs text-indigo-600 border-indigo-200 hover:bg-indigo-50 hover:border-indigo-300 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            Summary
+          </button>
+        </div>
+
+        <!-- ── Summary Input Box (toggled by top Summary button) ── -->
+        <div id="summaryInputBox" class="hidden bg-white border border-indigo-200 rounded-xl shadow-sm overflow-hidden" style="transition: all .2s ease;">
+          <div class="flex items-center gap-2 px-4 py-2.5 border-b border-slate-100 bg-indigo-50">
+            <div class="w-6 h-6 bg-indigo-600 rounded-md flex items-center justify-center flex-shrink-0">
+              <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            </div>
+            <span class="text-xs font-semibold text-indigo-700">New Summary</span>
+            <button onclick="toggleSummaryBox()" class="ml-auto text-slate-400 hover:text-slate-600 transition-colors" title="Close">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <div class="px-4 py-3">
+            <textarea id="summaryTextarea" class="w-full text-sm text-slate-600 resize-none outline-none placeholder-slate-300 min-h-[90px]" placeholder="Write a summary of this ticket…"></textarea>
+          </div>
+          <div class="px-4 py-2.5 border-t border-slate-100 flex justify-end">
+            <button onclick="saveSummary()" class="action-btn primary text-xs">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+              Save Summary
+            </button>
+          </div>
+        </div>
+
+        <!-- Static Summary Block -->
+        <div class="bg-amber-50 border border-amber-200 rounded-xl shadow-sm overflow-hidden">
+          <div class="px-5 py-4">
+            <div class="flex items-start justify-between gap-3 mb-3">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
+                <div>
+                  <p class="text-sm font-bold text-slate-800">Summary</p>
+                  <p class="text-xs text-slate-400">Created by <span class="font-medium text-slate-600">CX agent</span> &nbsp;|&nbsp; <span class="italic">19 hours ago (Tue, 9 Jun 2026 at 7:55 PM)</span></p>
+                </div>
+              </div>
+              <button class="w-7 h-7 rounded border border-slate-200 bg-white flex items-center justify-center text-slate-400 hover:bg-amber-100 transition-colors flex-shrink-0" title="Edit">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+              </button>
+            </div>
+            <div class="text-sm text-slate-700 leading-relaxed space-y-3">
+              <p>Hello Pavlo,</p>
+              <p>I hope you're well. Below is the user's message requesting information related to data processing. We would appreciate your assistance in processing this request:</p>
+              <p><strong>Please assist me to unsubscribe and delete my personnal data from your database.</strong></p>
+              <div>
+                <p class="mb-2">User Information:</p>
+                <ul class="space-y-1">
+                  <li class="ml-4 list-disc">User ID:13086343</li>
+                  <li class="ml-4 list-disc">User Email Linked to Account: ramafahla.thamae@gmail.com</li>
+                  <li class="ml-4 list-disc">Product usage (has the user ever logged in or used the product): <strong>YES</strong></li>
+                  <li class="ml-4 list-disc">Is the subscription canceled? <strong>YES</strong></li>
+                  <li class="ml-4 list-disc">Subscription Status: <strong>ACTIVE</strong></li>
+                  <li class="ml-4 list-disc">Subscription End Date: <strong>7 Jul 2026</strong></li>
+                  <li class="ml-4 list-disc">Did we inform the user about forwarding their request to DPO in the initial conversation: <strong>YES</strong></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sender Header Card -->
+        <div id="firstUserMessage" class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+              <div class="avatar bg-amber-100 text-amber-700 text-sm font-bold" style="width:36px;height:36px">R</div>
+              <div>
+                <p class="text-sm text-slate-700"><span class="font-bold text-indigo-600">Ramafahla Thamae</span> <span class="text-slate-500 font-normal">reported via email &bull; <span id="userMessageTime" class="italic">19 hours ago (Tue, 9 Jun 2026 at 7:50 PM)</span></span></p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full">New</span>
+              <button class="nav-icon w-7 h-7 rounded text-slate-400 flex items-center justify-center text-xs">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+              </button>
+              <button class="nav-icon w-7 h-7 rounded text-slate-400 flex items-center justify-center">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="px-5 py-4">
+            <p class="text-xs text-slate-400 mb-3">To: support@coursiv.io</p>
+            <div class="text-sm text-slate-700 leading-relaxed">
+              <p class="mb-3">Please assist me to unsubscribe and delete my personnal data from your database.</p>
+              <p class="mb-1">Kind Regards</p>
+              <p class="mb-1"> *RAMAFAHLA THAMAE (Mr.)*</p>
+              <p class="mb-1">*(+266) 62043258 (Mobile)*</p>
+              <p>* Email: Ramafahla Thamae &lt;<a href="mailto:ramafahla.thamae@gmail.com" class="text-indigo-600 hover:underline">ramafahla.thamae@gmail.com</a>&gt;*</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aixa Private Note with User Info -->
+        <div class="bg-amber-50 border border-amber-200 rounded-xl shadow-sm overflow-hidden">
+          <div class="px-5 py-3.5">
+            <div class="flex items-center gap-2 mb-3">
+              <div class="avatar bg-pink-100 text-pink-600 text-xs font-bold" style="width:30px;height:30px;font-size:10px">AZ</div>
+              <span class="text-xs font-semibold text-slate-700">Aixa Zimran</span>
+              <span class="text-xs text-slate-400">added a private note &bull; <span id="aixaNoteTime" class="italic">19 hours ago (Tue, 9 Jun 2026 at 7:51 PM)</span></span>
+            </div>
+
+            <div class="bg-white border border-slate-200 rounded-xl overflow-hidden text-sm">
+              <div class="px-4 py-3 border-b border-slate-100">
+                <p class="text-sm font-bold text-slate-800">User Information</p>
+              </div>
+              <table class="w-full">
+                <tbody>
+                  <tr class="border-b border-slate-100">
+                    <td class="px-4 py-2.5 text-xs font-semibold text-slate-500 uppercase tracking-wide w-48 bg-slate-50">User ID</td>
+                    <td class="px-4 py-2.5 text-sm text-slate-800">13086343</td>
+                  </tr>
+                  <tr class="border-b border-slate-100">
+                    <td class="px-4 py-2.5 text-xs font-semibold text-slate-500 uppercase tracking-wide bg-slate-50">Email</td>
+                    <td class="px-4 py-2.5 text-sm text-slate-800">ramafahla.thamae@gmail.com</td>
+                  </tr>
+                  <tr class="border-b border-slate-100">
+                    <td class="px-4 py-2.5 text-xs font-semibold text-slate-500 uppercase tracking-wide bg-slate-50">Verification Email</td>
+                    <td class="px-4 py-2.5 text-sm text-slate-800">ramafahla.thamae@gmail.com</td>
+                  </tr>
+                  <tr class="border-b border-slate-100">
+                    <td class="px-4 py-2.5 text-xs font-semibold text-slate-500 uppercase tracking-wide bg-slate-50">Created At</td>
+                    <td class="px-4 py-2.5 text-sm text-slate-800">2025-01-24 17:24:27</td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2.5 text-xs font-semibold text-slate-500 uppercase tracking-wide bg-slate-50">Registered At</td>
+                    <td class="px-4 py-2.5 text-sm text-slate-800">2026-06-09 13:51:50</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="px-4 py-3 border-t border-slate-100">
+                <p class="text-sm font-bold text-slate-800 mb-2">Typo Choice Reasoning</p>
+                <div class="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5">
+                  <p class="text-xs text-slate-600 leading-relaxed">The email address 'ramafahla.thamae@gmail.com' matches exactly with the candidate's email, and the candidate has a recent transaction from today (June 9, 2026), which is well within the 6-month requirement.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Static Reply – CX agent (Tue, 9 Jun 2026 at 12:20 AM) -->
+        <!-- Static Reply – CX agent (Tue, 9 Jun 2026 at 7:53 PM) -->
+        <div class="bg-gray-50 border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+          <div class="flex items-start gap-3 px-5 py-3.5">
+            <div class="avatar bg-indigo-100 text-indigo-600 font-bold mt-0.5" style="width:30px;height:30px;font-size:10px;flex-shrink:0">CX</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-xs font-semibold text-indigo-600">CX agent</span>
+                  <span class="text-xs text-slate-400">replied &bull; <span class="italic">19 hours ago (Tue, 9 Jun 2026 at 7:53 PM)</span></span>
+                </div>
+                <div class="flex items-center gap-1 flex-shrink-0 ml-2">
+                  <button class="w-7 h-7 rounded border border-slate-200 bg-white flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-colors" title="Forward">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                  </button>
+                  <button class="w-7 h-7 rounded border border-slate-200 bg-white flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-colors" title="More">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01"/></svg>
+                  </button>
+                </div>
+              </div>
+              <div class="text-xs text-slate-400 mb-2">To: ramafahla.thamae@gmail.com</div>
+              <div class="text-sm text-slate-700 leading-relaxed" style="white-space:pre-wrap">Hi Ramafahla Thamae,
+
+I've gone ahead and canceled your subscription, so you're all set
+
+That means:
+
+• No more renewals
+• No further charges going forward
+• You'll still keep access until the end of your current paid period
+
+I've gone ahead and personally <strong>forwarded your request for data deletion</strong> to my colleagues in the Data Protection Department to ensure everything is completed in full compliance with privacy regulations. I know how important data privacy is, and I want to make sure your information is handled with the highest level of care.
+
+I am committed to making sure this is a smooth and respectful process for you. If you have any other questions while I wait for the update from the technical team, please don't hesitate to ask!
+
+Best Regards,
+Coursiv Support Team
+Email: support@coursiv.io
+Website: https://home.coursiv.io/
+CX agent</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reply composer -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+          <div class="flex border-b border-slate-100" id="composerTabs">
+            <button id="tabReply" onclick="switchTab('reply')" class="composer-tab active px-4 py-2.5 text-xs font-semibold text-indigo-600 border-b-2 border-indigo-500 transition-colors">Reply</button>
+            <button id="tabNote" onclick="switchTab('note')" class="composer-tab px-4 py-2.5 text-xs font-semibold text-slate-500 hover:text-slate-700 border-b-2 border-transparent transition-colors">Add Note</button>
+          </div>
+          <div class="px-4 py-3">
+            <div id="composerToLine" class="text-xs text-slate-400 mb-2">To: <span id="composerToEmail" class="text-slate-600">ramafahla.thamae@gmail.com</span></div>
+            <textarea id="replyTextarea" class="w-full text-sm text-slate-600 resize-none outline-none min-h-[72px] placeholder-slate-300" placeholder="Type your reply…"></textarea>
+          </div>
+          <div class="px-4 py-2.5 border-t border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-1">
+              <button class="nav-icon w-7 h-7 rounded text-slate-400 flex items-center justify-center"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg></button>
+              <button class="nav-icon w-7 h-7 rounded text-slate-400 flex items-center justify-center"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg></button>
+            </div>
+            <button id="composerSubmitBtn" onclick="handleComposerSubmit()" class="action-btn primary text-xs">
+              <span id="composerBtnLabel">Send Reply</span>
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /thread scroll -->
+    </main>
+
+    <!-- ── RIGHT SIDEBAR ──────────────────────────────────────────── -->
+    <aside class="w-72 flex-shrink-0 bg-white overflow-y-auto flex flex-col border-l border-slate-200" style="width:288px">
+
+      <!-- SLA + Open -->
+      <div class="px-4 py-3 border-b border-slate-200 bg-slate-50">
+        <div class="flex items-center justify-between mb-2">
+          <span id="headerStatusBadge" class="text-xs font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700">Open</span>
+          <button class="text-slate-400 hover:text-slate-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-header" onclick="toggleSection(this)">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            Contact info
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-indigo-500 text-xs font-medium">Edit</span>
+            <svg class="w-3.5 h-3.5 text-slate-400 chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+          </div>
+        </div>
+        <div class="section-content px-4 pb-3">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="avatar bg-amber-100 text-amber-700 font-bold" style="width:38px;height:38px">RT</div>
+            <div>
+              <p class="text-sm font-semibold text-indigo-600">Ramafahla Thamae</p>
+            </div>
+          </div>
+          <div class="mb-1">
+            <p class="field-label">Email</p>
+            <p class="text-xs text-slate-700">ramafahla.thamae@gmail.com</p>
+          </div>
+          <button class="text-indigo-500 text-xs font-medium hover:underline mt-1 flex items-center gap-1">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            View more info
+          </button>
+          <!-- Recent Timeline -->
+          <div class="mt-3 pt-3 border-t border-slate-100">
+            <p class="field-label mb-2">Recent timeline</p>
+            <div class="flex gap-2">
+              <div class="timeline-dot mt-1"></div>
+              <div>
+                <p class="text-xs font-semibold text-slate-700">Ramafahla Thamae</p>
+                <p class="text-xs text-indigo-500">#67676767</p>
+                <p id="timelineTime" class="text-xs text-slate-400">09 Jun 2026, 07:50 PM</p>
+                <p class="text-xs text-slate-500">Status: Open</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ticket Properties -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-header" onclick="toggleSection(this)">
+          <span>Ticket Properties</span>
+          <svg class="w-3.5 h-3.5 text-slate-400 chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="section-content px-4 pb-4 space-y-3">
+
+          <!-- Tags -->
+          <div>
+            <p class="field-label">Tags</p>
+            <div class="flex flex-wrap gap-1.5">
+              <span class="tag-chip">ai-analysis-in-progress <button>×</button></span>
+            </div>
+          </div>
+
+          <!-- Is AI mistaken -->
+          <div class="flex items-center gap-2">
+            <input type="checkbox" id="aiMistaken" class="w-3.5 h-3.5 rounded accent-indigo-600">
+            <label for="aiMistaken" class="text-xs text-slate-600">Is AI mistaken?</label>
+          </div>
+
+          <!-- User insight -->
+          <div>
+            <p class="field-label">User insight</p>
+            <div class="select-wrapper">
+              <select class="form-select"><option>--</option><option>High value</option><option>At risk</option><option>New user</option></select>
+            </div>
+          </div>
+
+          <!-- Has iOS Events -->
+          <div>
+            <p class="field-label">Has iOS Events</p>
+            <div class="select-wrapper">
+              <select class="form-select"><option>--</option><option>Yes</option><option>No</option></select>
+            </div>
+          </div>
+
+          <!-- Has Home Open View -->
+          <div>
+            <p class="field-label">Has Home Open View</p>
+            <div class="select-wrapper">
+              <select class="form-select"><option>--</option><option>Yes</option><option>No</option></select>
+            </div>
+          </div>
+
+          <!-- App Version -->
+          <div>
+            <p class="field-label">App Version</p>
+            <input type="text" class="form-input" placeholder="--"/>
+          </div>
+
+          <!-- Funnel Version -->
+          <div>
+            <p class="field-label">Funnel Version</p>
+            <input type="text" class="form-input" value="f_2026"/>
+          </div>
+
+          <!-- Product -->
+          <div>
+            <p class="field-label">Product</p>
+            <div class="select-wrapper">
+              <select class="form-select"><option>Prosperi</option><option>Arnegen-Digital</option><option selected>Coursiv</option><option>Coursiv Junior</option><option>Edulagoon</option><option>Finelo</option><option>Subpilot</option></select>
+            </div>
+          </div>
+
+          <!-- ACE -->
+          <div>
+            <p class="field-label">ACE</p>
+            <input type="text" class="form-input" placeholder="--"/>
+          </div>
+
+          <hr class="border-slate-100">
+
+          <!-- Status -->
+          <div>
+            <p class="field-label">Status <span class="required-star">*</span></p>
+            <div class="select-wrapper">
+              <select id="statusSelect" class="form-select"><option selected>Open</option><option>Pending</option><option>Resolved</option><option>Closed</option><option>Waiting for Customer</option><option>Customer Responded</option></select>
+            </div>
+          </div>
+
+          <!-- User ID -->
+          <div>
+            <p class="field-label">User ID</p>
+            <input type="text" class="form-input" value="13086343"/>
+          </div>
+
+          <!-- Payment method -->
+          <div>
+            <p class="field-label">Payment method <span class="required-star">*</span></p>
+            <div class="select-wrapper">
+              <select id="paymentMethodSelect" class="form-select"><option>--</option><option selected>Card</option><option>Paypal</option><option>non user/user not found</option></select>
+            </div>
+          </div>
+
+          <!-- Country -->
+          <div>
+            <p class="field-label">Country</p>
+            <div class="select-wrapper">
+              <select id="countrySelect" class="form-select"></select>
+            </div>
+          </div>
+
+          <!-- Typification -->
+          <div>
+            <p class="field-label">Typification <span class="required-star">*</span></p>
+            <div class="select-wrapper">
+              <select id="typificationSelect" class="form-select"></select>
+            </div>
+          </div>
+
+          <!-- Sub-category (nested indent) -->
+          <div id="subcategoryWrapper" class="hidden pl-3 border-l-2 border-slate-200">
+            <p class="field-label">Sub-category <span class="required-star">*</span></p>
+            <div class="select-wrapper">
+              <select id="subcategorySelect" class="form-select"></select>
+            </div>
+          </div>
+
+          <!-- Specific (nested indent, level 2) -->
+          <div id="specificWrapper" class="pl-6 border-l-2 border-slate-100 hidden">
+            <p class="field-label">Specific</p>
+            <div class="select-wrapper">
+              <select id="specificSelect" class="form-select"></select>
+            </div>
+          </div>
+
+          <!-- Type -->
+          <div>
+            <p class="field-label">Type</p>
+            <div class="select-wrapper">
+              <select id="typeSelect" class="form-select">
+                <option value="">--</option>
+                <option value="Unsubscribed" selected>Unsubscribed</option>
+                <option value="Refunded">Refunded</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Refunded Reason (hidden by default) -->
+          <div id="refundedReasonWrapper" class="hidden pl-3 border-l-2 border-slate-200">
+            <p class="field-label">Refunded Reason</p>
+            <div class="select-wrapper">
+              <select class="form-select">
+                <option>--</option>
+                <option>IOS</option>
+                <option>Customercare</option>
+                <option>Legal</option>
+                <option>EU</option>
+                <option>Wrong email exceptional</option>
+                <option>Exceptional</option>
+                <option>Funnel</option>
+                <option>Negative review</option>
+                <option>Temporary Issue</option>
+                <option>Retain rejected + refund</option>
+                <option>Returned after retain accepted</option>
+                <option>Organic</option>
+                <option>Solid</option>
+                <option>Finance</option>
+                <option>MBG</option>
+                <option>Test</option>
+                <option>App Issue</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Full/Partial (hidden by default) -->
+          <div id="fullPartialWrapper" class="hidden pl-3 border-l-2 border-slate-200">
+            <p class="field-label">Full/Partial</p>
+            <div class="select-wrapper">
+              <select class="form-select">
+                <option>--</option>
+                <option>Partial 50</option>
+                <option>Full</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Retention status -->
+          <div>
+            <p class="field-label">Retention status</p>
+            <div class="select-wrapper">
+              <select class="form-select"><option>--</option><option>Offered</option><option>Extension accepted</option><option>Upsell accepted</option><option>Both</option></select>
+            </div>
+          </div>
+
+          <!-- Payment -->
+          <div>
+            <p class="field-label">Payment</p>
+            <div class="select-wrapper">
+              <select id="paymentSelect" class="form-select"><option>--</option><option selected>Web</option><option>App Store</option><option>Google Play</option><option>non user/not found</option></select>
+            </div>
+          </div>
+
+          <!-- order_id for refund -->
+          <div>
+            <p class="field-label">order_id for refund</p>
+            <input type="text" class="form-input" placeholder=""/>
+          </div>
+
+          <!-- Channel -->
+          <div>
+            <p class="field-label">Channel <span class="required-star">*</span></p>
+            <div class="select-wrapper">
+              <select class="form-select"><option>--</option><option>Help Widget</option><option>PayPal Email</option><option>Live Chat</option><option>App Store</option><option>Google Play</option><option>Direct Email</option><option selected>Support Email</option><option>Legal</option></select>
+            </div>
+          </div>
+
+          <!-- Confirm your email -->
+          <div>
+            <p class="field-label">Confirm your email</p>
+            <input type="email" class="form-input" placeholder=""/>
+          </div>
+
+          <!-- Group -->
+          <div>
+            <p class="field-label">Group <span class="required-star">*</span></p>
+            <div class="select-wrapper">
+              <select class="form-select"><option>Finelo Support Team</option><option>Billing Team</option><option>Technical Support</option><option>VIP Support</option><option selected>Legal</option></select>
+            </div>
+          </div>
+
+          <!-- Agent -->
+          <div class="pl-3 border-l-2 border-slate-200">
+            <p class="field-label">Agent</p>
+            <div class="select-wrapper">
+              <select class="form-select"><option selected>Data Protection Officer</option></select>
+            </div>
+            <p class="updated-text mt-1">Updated</p>
+          </div>
+
+          <!-- Priority -->
+          <div>
+            <p class="field-label">Priority <span class="required-star">*</span></p>
+            <div class="select-wrapper">
+              <select class="form-select">
+                <option value="urgent">🔴 Urgent</option>
+                <option value="high" selected>🟠 High</option>
+                <option value="medium">🟡 Medium</option>
+                <option value="low">🟢 Low</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Reply sent note -->
+          <div class="text-xs text-slate-400 italic">Reply sent</div>
+
+          <!-- Update Button -->
+          <button class="update-btn" style="background-color:#cbd5e1;color:#64748b;cursor:not-allowed;pointer-events:none;" disabled>Update</button>
+        </div>
+      </div>
+
+      <!-- Other sidebar sections (collapsed) -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-header collapsed" onclick="toggleSection(this)">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Recent Sessions
+          </div>
+          <svg class="w-3.5 h-3.5 text-slate-400 chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="section-content hidden px-4 pb-3"><p class="text-xs text-slate-400">No recent sessions.</p></div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-header collapsed" onclick="toggleSection(this)">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+            Linked Tickets
+          </div>
+          <svg class="w-3.5 h-3.5 text-slate-400 chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="section-content hidden px-4 pb-3"><p class="text-xs text-slate-400">No linked tickets.</p></div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-header collapsed" onclick="toggleSection(this)">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Average Handling Time
+          </div>
+          <svg class="w-3.5 h-3.5 text-slate-400 chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="section-content hidden px-4 pb-3"><p class="text-xs text-slate-400">—</p></div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-header collapsed" onclick="toggleSection(this)">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Time logs
+          </div>
+          <svg class="w-3.5 h-3.5 text-slate-400 chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="section-content hidden px-4 pb-3"><p class="text-xs text-slate-400">No time logged.</p></div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-header collapsed" onclick="toggleSection(this)">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+            To-do
+          </div>
+          <svg class="w-3.5 h-3.5 text-slate-400 chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="section-content hidden px-4 pb-3"><p class="text-xs text-slate-400">No tasks.</p></div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-header collapsed" onclick="toggleSection(this)">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            Aixa
+          </div>
+          <svg class="w-3.5 h-3.5 text-slate-400 chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="section-content hidden px-4 pb-3"><p class="text-xs text-slate-400">No Aixa data.</p></div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-header collapsed" onclick="toggleSection(this)">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            Clone Ticket
+          </div>
+          <svg class="w-3.5 h-3.5 text-slate-400 chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="section-content hidden px-4 pb-3"><button class="action-btn text-xs w-full justify-center">Clone this ticket</button></div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-header collapsed" onclick="toggleSection(this)">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+            Attachments Manager
+          </div>
+          <svg class="w-3.5 h-3.5 text-slate-400 chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="section-content hidden px-4 pb-3"><p class="text-xs text-slate-400">No attachments.</p></div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-section-header collapsed" onclick="toggleSection(this)">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Sentimental Jeff!
+          </div>
+          <svg class="w-3.5 h-3.5 text-slate-400 chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="section-content hidden px-4 pb-3"><p class="text-xs text-slate-400">No sentiment data.</p></div>
+      </div>
+
+    </aside><!-- /sidebar -->
+
+  </div><!-- /three-col -->
+</div><!-- /main wrapper -->
+
+<script>
+  /* ── Sidebar toggle ─────────────────────────────────── */
+  function toggleSection(header) {
+    const content = header.nextElementSibling;
+    const isCollapsed = header.classList.contains('collapsed');
+    if (isCollapsed) {
+      header.classList.remove('collapsed');
+      content.classList.remove('hidden');
+    } else {
+      header.classList.add('collapsed');
+      content.classList.add('hidden');
+    }
+  }
+
+  // Remove tag chip on click
+  document.querySelectorAll('.tag-chip button').forEach(btn => {
+    btn.addEventListener('click', () => btn.closest('.tag-chip').remove());
+  });
+
+  /* ── Reply-sent state ───────────────────────────────── */
+  let isReplySent = false;
+
+  /* ── Toast notification ─────────────────────────────── */
+  function _showToast(message, bgColor) {
+    const existing = document.getElementById('activeToast');
+    if (existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'activeToast';
+    overlay.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:none;';
+
+    const box = document.createElement('div');
+    box.style.cssText = [
+      'background:' + bgColor,
+      'color:#fff',
+      'padding:14px 22px',
+      'border-radius:10px',
+      'font-family:DM Sans,sans-serif',
+      'font-size:.85rem',
+      'font-weight:600',
+      'box-shadow:0 8px 32px rgba(0,0,0,.22)',
+      'max-width:400px',
+      'text-align:center',
+      'line-height:1.5',
+      'opacity:1',
+      'transition:opacity .4s ease',
+    ].join(';');
+    box.textContent = message;
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    setTimeout(() => { box.style.opacity = '0'; }, 3200);
+    setTimeout(() => { overlay.remove(); }, 3650);
+  }
+
+  function showErrorToast(message)   { _showToast(message, '#dc2626'); }
+  function showSuccessToast(message) { _showToast(message, '#16a34a'); }
+
+  /* ── Update button ──────────────────────────────────── */
+  document.querySelector('.update-btn').addEventListener('click', function() {
+    // Update header status badge to mirror statusSelect
+    const currentStatus = document.getElementById('statusSelect').value;
+    const badge = document.getElementById('headerStatusBadge');
+    badge.textContent = currentStatus;
+    badge.className = 'text-xs font-bold px-2 py-0.5 rounded-full ';
+    if (currentStatus === 'Open') {
+      badge.classList.add('bg-red-100', 'text-red-700');
+    } else if (currentStatus === 'Resolved' || currentStatus === 'Closed') {
+      badge.classList.add('bg-green-100', 'text-green-700');
+    } else {
+      badge.classList.add('bg-amber-100', 'text-amber-700');
+    }
+
+    // Success
+    showSuccessToast('Congratulations! Everything is correct!');
+    const orig = this.textContent;
+    this.textContent = '✓ Updated!';
+    this.style.background = '#16a34a';
+    setTimeout(() => { this.textContent = orig; this.style.background = ''; }, 2000);
+  });
+
+  /* ── Composer tab state ─────────────────────────────── */
+  let activeTab = 'reply'; // 'reply' | 'note' | 'summary'
+
+  const tabConfig = {
+    reply:   { label: 'Send Reply',    placeholder: 'Type your reply…',       showTo: true  },
+    note:    { label: 'Add Note',      placeholder: 'Type a private note…',   showTo: false },
+  };
+
+  function switchTab(tab) {
+    activeTab = tab;
+    const cfg = tabConfig[tab];
+
+    // Update tab button styles
+    ['reply','note'].forEach(t => {
+      const btn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+      if (t === tab) {
+        btn.classList.add('text-indigo-600','border-b-2','border-indigo-500');
+        btn.classList.remove('text-slate-500','border-transparent');
+      } else {
+        btn.classList.remove('text-indigo-600','border-b-2','border-indigo-500');
+        btn.classList.add('text-slate-500','border-transparent');
+      }
+    });
+
+    // Update submit button label
+    document.getElementById('composerBtnLabel').textContent = cfg.label;
+
+    // Toggle "To:" line
+    document.getElementById('composerToLine').style.display = cfg.showTo ? '' : 'none';
+
+    // Update placeholder
+    document.getElementById('replyTextarea').placeholder = cfg.placeholder;
+  }
+
+  /* ── Timestamp helper ───────────────────────────────── */
+  function getDynamicTimestamp() {
+    const now = new Date();
+    const days   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const day    = days[now.getDay()];
+    const date   = now.getDate();
+    const month  = months[now.getMonth()];
+    const year   = now.getFullYear();
+    let   hours  = now.getHours();
+    const mins   = String(now.getMinutes()).padStart(2,'0');
+    const ampm   = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    return `just now (${day}, ${date} ${month} ${year} at ${hours}:${mins} ${ampm})`;
+  }
+
+  /* ── HTML Templates ─────────────────────────────────── */
+  function buildReplyHTML(text, ts, email) {
+    return `
+      <div class="bg-gray-50 border border-slate-200 rounded-xl shadow-sm overflow-hidden thread-inject">
+        <div class="flex items-start gap-3 px-5 py-3.5">
+          <div class="avatar bg-indigo-100 text-indigo-600 font-bold mt-0.5" style="width:30px;height:30px;font-size:10px;flex-shrink:0">CX</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between mb-1">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-xs font-semibold text-indigo-600">CX agent</span>
+                <span class="text-xs text-slate-400">replied &bull; <span class="italic">${ts}</span></span>
+              </div>
+              <div class="flex items-center gap-1 flex-shrink-0 ml-2">
+                <button class="w-7 h-7 rounded border border-slate-200 bg-white flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-colors" title="Forward">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </button>
+                <button class="w-7 h-7 rounded border border-slate-200 bg-white flex items-center justify-center text-slate-400 hover:bg-slate-100 transition-colors" title="More">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="text-xs text-slate-400 mb-2">To: ${escapeHTML(email)}</div>
+            <div class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${escapeHTML(text)}</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function buildNoteHTML(text, ts, email) {
+    return `<div class="bg-amber-50 border border-amber-200 rounded-xl shadow-sm overflow-hidden thread-inject">
+      <div class="flex items-start gap-3 px-5 py-3.5">
+        <div class="avatar bg-indigo-100 text-indigo-600 font-bold mt-0.5" style="width:30px;height:30px;font-size:10px;flex-shrink:0">CX</div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between mb-0.5">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-xs font-semibold text-indigo-600">CX agent</span>
+              <span class="text-xs text-slate-400">added a private note &bull; <span class="block-ts italic">${ts}</span></span>
+            </div>
+            <button class="block-edit-btn w-7 h-7 rounded border border-slate-200 bg-white flex items-center justify-center text-slate-400 hover:bg-amber-100 transition-colors flex-shrink-0 ml-2" onclick="editBlock(this)" title="Edit">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            </button>
+          </div>
+          <div class="text-xs text-slate-400 mb-2">Notified to: ${escapeHTML(email)}</div>
+          <div class="block-body">
+            <div class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${escapeHTML(text)}</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function buildSummaryHTML(text, ts) {
+    return `<div class="bg-amber-50 border border-amber-200 rounded-xl shadow-sm overflow-hidden thread-inject">
+      <div class="px-5 py-4">
+        <div class="flex items-start justify-between gap-3 mb-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+            <div>
+              <p class="text-sm font-bold text-slate-800">Summary</p>
+              <p class="text-xs text-slate-400">Created by <span class="font-medium text-slate-600">CX agent</span> &nbsp;|&nbsp; <span class="block-ts italic">${ts}</span></p>
+            </div>
+          </div>
+          <button class="block-edit-btn w-7 h-7 rounded border border-slate-200 bg-white flex items-center justify-center text-slate-400 hover:bg-amber-100 transition-colors flex-shrink-0" onclick="editBlock(this)" title="Edit">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          </button>
+        </div>
+        <div class="block-body">
+          <div class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${escapeHTML(text)}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  /* ── Inline edit / cancel / save ───────────────────── */
+  function editBlock(editBtn) {
+    const card = editBtn.closest('.thread-inject');
+    const body = card.querySelector('.block-body');
+    const currentText = body.innerText.trim();
+
+    editBtn.style.display = 'none';
+    body.innerHTML = `
+      <textarea class="w-full text-sm text-slate-600 border border-slate-200 rounded-lg p-2.5 resize-none outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 min-h-[80px] transition-colors" style="font-family:inherit">${currentText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>
+      <div class="flex justify-end gap-2 mt-2">
+        <button onclick="cancelEdit(this)" class="action-btn text-xs">Cancel</button>
+        <button onclick="saveEdit(this)" class="action-btn primary text-xs">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          Save
+        </button>
+      </div>`;
+    const ta = body.querySelector('textarea');
+    ta.dataset.original = currentText;
+    ta.focus();
+    ta.setSelectionRange(ta.value.length, ta.value.length);
+  }
+
+  function saveEdit(saveBtn) {
+    const card    = saveBtn.closest('.thread-inject');
+    const body    = card.querySelector('.block-body');
+    const tsSpan  = card.querySelector('.block-ts');
+    const editBtn = card.querySelector('.block-edit-btn');
+    const newText = body.querySelector('textarea').value.trim();
+
+    body.innerHTML = `<div class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${escapeHTML(newText)}</div>`;
+    if (tsSpan && !tsSpan.textContent.includes('(edited)')) tsSpan.textContent += ' (edited)';
+    if (editBtn) editBtn.style.display = '';
+  }
+
+  function cancelEdit(cancelBtn) {
+    const card    = cancelBtn.closest('.thread-inject');
+    const body    = card.querySelector('.block-body');
+    const editBtn = card.querySelector('.block-edit-btn');
+    const orig    = body.querySelector('textarea').dataset.original || '';
+    body.innerHTML = `<div class="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap">${escapeHTML(orig)}</div>`;
+    if (editBtn) editBtn.style.display = '';
+  }
+
+  /* ── Utility ────────────────────────────────────────── */
+  function escapeHTML(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── Summary box toggle ─────────────────────────────── */
+  function toggleSummaryBox() {
+    const box = document.getElementById('summaryInputBox');
+    const isHidden = box.classList.contains('hidden');
+    if (isHidden) {
+      box.classList.remove('hidden');
+      // Animate in
+      box.style.opacity = '0';
+      box.style.transform = 'translateY(-6px)';
+      box.style.transition = 'opacity .2s ease, transform .2s ease';
+      requestAnimationFrame(() => {
+        box.style.opacity = '1';
+        box.style.transform = 'translateY(0)';
+      });
+      setTimeout(() => document.getElementById('summaryTextarea').focus(), 50);
+      // Highlight the top Summary button
+      document.getElementById('topSummaryBtn').classList.add('bg-indigo-50','rounded-md','px-2','py-0.5');
+    } else {
+      box.style.opacity = '0';
+      box.style.transform = 'translateY(-6px)';
+      setTimeout(() => {
+        box.classList.add('hidden');
+        box.style.opacity = '';
+        box.style.transform = '';
+      }, 200);
+      document.getElementById('topSummaryBtn').classList.remove('bg-indigo-50','rounded-md','px-2','py-0.5');
+    }
+  }
+
+  function saveSummary() {
+    const textarea  = document.getElementById('summaryTextarea');
+    const container = document.getElementById('threadContainer');
+    const text      = textarea.value.trim();
+
+    if (!text) {
+      textarea.style.outline = '2px solid #ef4444';
+      textarea.focus();
+      setTimeout(() => textarea.style.outline = '', 1200);
+      return;
+    }
+
+    const ts   = getDynamicTimestamp();
+    const node = createNode(buildSummaryHTML(text, ts));
+
+    // Insert between the subject header and the first user message
+    const firstMsg = document.getElementById('firstUserMessage');
+    if (firstMsg) {
+      container.insertBefore(node, firstMsg);
+    } else {
+      container.insertBefore(node, container.firstElementChild);
+    }
+
+    // Animate in
+    node.style.opacity = '0';
+    node.style.transform = 'translateY(-8px)';
+    node.style.transition = 'opacity .25s ease, transform .25s ease';
+    requestAnimationFrame(() => {
+      node.style.opacity = '1';
+      node.style.transform = 'translateY(0)';
+    });
+
+    // Clear & close box
+    textarea.value = '';
+    toggleSummaryBox();
+    container.scrollTop = 0;
+  }
+
+  /* ── Main submit handler ────────────────────────────── */
+  const REPLY_TEMPLATE = `Hi Ramafahla Thamae,
+
+
+Best Regards,
+Coursiv Support Team
+Email: support@coursiv.io
+Website: https://home.coursiv.io/
+CX agent`;
+
+  function handleComposerSubmit() {
+    const textarea  = document.getElementById('replyTextarea');
+    const container = document.getElementById('threadContainer');
+    const text      = textarea.value.trim();
+
+    if (!text) {
+      textarea.style.borderBottom = '2px solid #ef4444';
+      textarea.focus();
+      setTimeout(() => textarea.style.borderBottom = '', 1200);
+      return;
+    }
+
+    const ts   = getDynamicTimestamp();
+    // Dynamically read the correct email from the composer's "To:" line
+    const email = (document.getElementById('composerToEmail') || {}).textContent?.trim()
+               || document.querySelector('.sidebar-section .text-xs.text-slate-700')?.textContent?.trim()
+               || 'unknown@email.com';
+    let   html = '';
+
+    if (activeTab === 'reply') {
+      html = buildReplyHTML(text, ts, email);
+      const composer = container.lastElementChild;
+      const node = createNode(html);
+      container.insertBefore(node, composer);
+      isReplySent = true; // ← mark reply as sent
+    } else if (activeTab === 'note') {
+      html = buildNoteHTML(text, ts, email);
+      const composer = container.lastElementChild;
+      const node = createNode(html);
+      container.insertBefore(node, composer);
+    }
+
+    // Animate in
+    const injected = container.querySelector('.thread-inject:not(.animated)');
+    if (injected) {
+      injected.classList.add('animated');
+      injected.style.opacity = '0';
+      injected.style.transform = 'translateY(8px)';
+      injected.style.transition = 'opacity .25s ease, transform .25s ease';
+      requestAnimationFrame(() => {
+        injected.style.opacity = '1';
+        injected.style.transform = 'translateY(0)';
+      });
+    }
+
+    // Restore template (reply tab) or clear (note tab), then scroll
+    if (activeTab === 'reply') {
+      textarea.value = REPLY_TEMPLATE;
+      textarea.setSelectionRange(0, 0);
+      textarea.scrollTop = 0;
+    } else {
+      textarea.value = '';
+    }
+    container.scrollTop = container.scrollHeight;
+
+    // Button flash
+    const btn = document.getElementById('composerSubmitBtn');
+    btn.style.background = '#16a34a';
+    setTimeout(() => btn.style.background = '', 1500);
+  }
+
+  function createNode(html) {
+    const div = document.createElement('div');
+    div.innerHTML = html.trim();
+    return div.firstElementChild;
+  }
+
+  // Allow Ctrl+Enter / Cmd+Enter to submit
+  document.getElementById('replyTextarea').addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') handleComposerSubmit();
+  });
+
+  // Pre-fill reply textarea with template
+  (function() {
+    const ta = document.getElementById('replyTextarea');
+    ta.value = REPLY_TEMPLATE;
+    ta.setSelectionRange(0, 0);
+    ta.scrollTop = 0;
+  })();
+
+  /* ── Country codes (3-letter, sorted ABW→SMR) ───────── */
+  const COUNTRY_CODES = ["ABW","AFG","AGO","AIA","ALA","ALB","AND","ARE","ARG","ARM","ASM","ATA","ATF","ATG","AUS","AUT","AZE","BDI","BEL","BEN","BES","BFA","BGD","BGR","BHR","BHS","BIH","BLM","BLR","BLZ","BMU","BOL","BRA","BRB","BRN","BTN","BVT","BWA","CAF","CAN","CCK","CHE","CHL","CHN","CIV","CMR","COD","COG","COK","COL","COM","CPV","CRI","CUB","CUW","CXR","CYM","CYP","CZE","DEU","DJI","DMA","DNK","DOM","DZA","ECU","EGY","ERI","ESH","ESP","EST","ETH","FIN","FJI","FLK","FRA","FRO","FSM","GAB","GBR","GEO","GGY","GHA","GIB","GIN","GLP","GMB","GNB","GNQ","GRC","GRD","GRL","GTM","GUF","GUM","GUY","HKG","HMD","HND","HRV","HTI","HUN","IDN","IMN","IND","IOT","IRL","IRN","IRQ","ISL","ISR","ITA","JAM","JEY","JOR","JPN","KAZ","KEN","KGZ","KHM","KIR","KNA","KOR","KWT","LAO","LBN","LBR","LBY","LCA","LIE","LKA","LSO","LTU","LUX","LVA","MAC","MAF","MAR","MCO","MDA","MDG","MDV","MEX","MHL","MKD","MLI","MLT","MMR","MNE","MNG","MNP","MOZ","MRT","MSR","MTQ","MUS","MWI","MYS","MYT","NAM","NCL","NER","NFK","NGA","NIC","NIU","NLD","NOR","NPL","NRU","NZL","OMN","PAK","PAN","PCN","PER","PHL","PLW","PNG","POL","PRI","PRK","PRT","PRY","PSE","PYF","QAT","REU","ROU","RUS","RWA","SAU","SDN","SEN","SGP","SGS","SHN","SJM","SLB","SLE","SLV","SMR"];
+  (function() {
+    const sel = document.getElementById('countrySelect');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">--</option>' + COUNTRY_CODES.map(c => `<option value="${c}"${c === 'LSO' ? ' selected' : ''}>${c}</option>`).join('');
+  })();
+
+  /* ── Dependent dropdowns: Typification → Sub-category → Specific ── */
+  const RAW_ENTRIES = [
+    "Refund request_Billing confusion_Subscription","Refund request_Billing confusion_Upsell",
+    "Refund request_Product issue_Technical issue","Refund request_Product issue_Language",
+    "Refund request_Product issue_Feature dissatisfaction",
+    "Refund request_Value mismatch_No usage","Refund request_Value mismatch_Misleading advertising",
+    "Refund request_Value mismatch_Wrong product understanding",
+    "Refund request_Other_Personal reasons","Refund request_Other_Mistake","Refund request_Other_Unknown reason",
+    "Account_Unsubscribe_Cancel","Account_Unsubscribe_Instruction",
+    "Account_Why charged_Subscription","Account_Why charged_Upsell",
+    "Account_Settings_Change password","Account_Settings_Change email/username","Account_Settings_Change language",
+    "Account_Information_General","Account_Information_Taxes","Account_Information_Payment",
+    "Bugs & issues_Can't login_Typo","Bugs & issues_Can't login_No registration",
+    "Bugs & issues_Can't login_User exists","Bugs & issues_Can't login_Password reset issue",
+    "Bugs & issues_App issue_Features","Bugs & issues_App issue_Content",
+    "Bugs & issues_App issue_Lesson issue","Bugs & issues_App issue_Navigation",
+    "Bugs & issues_Other_Payment issue","Bugs & issues_Other_Locked",
+    "Data privacy_Data erasure","Data privacy_Mailing list","Data privacy_Data privacy questions",
+    "Platform",
+    "General_About_Potential user","General_About_Product description","General_About_Add-ons",
+    "General_Feedback_Collaboration","General_Feedback_Positive feedback","General_Feedback_Negative feedback",
+    "General_SP flow_Cancellation flow","General_SP flow_Negotiation flow",
+    "General_Other_Spam","General_Other_Invoice detailed","General_Other_Invoice usual","General_Other_Other",
+    "Not Identified"
+  ];
+
+  // Build nested map: { typification: { subcategory: [specifics] } }
+  const DROPDOWN_MAP = {};
+  RAW_ENTRIES.forEach(entry => {
+    const parts = entry.split('_');
+    const typ = parts[0], sub = parts[1] || null, spec = parts[2] || null;
+    if (!DROPDOWN_MAP[typ]) DROPDOWN_MAP[typ] = {};
+    if (sub) {
+      if (!DROPDOWN_MAP[typ][sub]) DROPDOWN_MAP[typ][sub] = [];
+      if (spec) DROPDOWN_MAP[typ][sub].push(spec);
+    }
+  });
+
+  function populateSelect(sel, options, placeholder) {
+    sel.innerHTML = `<option value="">-- ${placeholder} --</option>` +
+      options.map(o => `<option value="${o.replace(/"/g,'&quot;')}">${o}</option>`).join('');
+  }
+
+  const typSel  = document.getElementById('typificationSelect');
+  const subSel  = document.getElementById('subcategorySelect');
+  const specSel = document.getElementById('specificSelect');
+  const specWrap = document.getElementById('specificWrapper');
+  const subWrap  = document.getElementById('subcategoryWrapper');
+
+  const HIDDEN_TYPS = new Set(['', 'Not Identified', 'Platform']);
+
+  if (typSel) {
+    populateSelect(typSel, Object.keys(DROPDOWN_MAP), 'Select');
+
+    typSel.addEventListener('change', function() {
+      const typ  = this.value;
+      const subs = !HIDDEN_TYPS.has(typ) && DROPDOWN_MAP[typ]
+                   ? Object.keys(DROPDOWN_MAP[typ]) : [];
+
+      if (HIDDEN_TYPS.has(typ) || subs.length === 0) {
+        // Hide both sub-category and specific
+        subWrap.classList.add('hidden');
+        specWrap.classList.add('hidden');
+      } else {
+        populateSelect(subSel, subs, 'Select');
+        subWrap.classList.remove('hidden');
+        // Reset and hide specific until sub-category is chosen
+        specWrap.classList.add('hidden');
+      }
+    });
+
+    subSel.addEventListener('change', function() {
+      const typ   = typSel.value;
+      const specs = (typ && this.value && DROPDOWN_MAP[typ] && DROPDOWN_MAP[typ][this.value])
+                    ? DROPDOWN_MAP[typ][this.value] : [];
+      if (specs.length > 0) {
+        populateSelect(specSel, specs, 'Select');
+        specWrap.classList.remove('hidden');
+      } else {
+        specWrap.classList.add('hidden');
+      }
+    });
+
+    // Initialize defaults: set Typification → Sub-category cascade
+    typSel.value = 'Data privacy';
+    typSel.dispatchEvent(new Event('change'));
+    subSel.value = 'Data erasure';
+    subSel.dispatchEvent(new Event('change'));
+  }
+
+  /* ── Type → conditional Refund fields ──────────────── */
+  const typeSelect = document.getElementById('typeSelect');
+  if (typeSelect) {
+    typeSelect.addEventListener('change', function() {
+      const show = this.value === 'Refunded';
+      document.getElementById('refundedReasonWrapper').classList.toggle('hidden', !show);
+      document.getElementById('fullPartialWrapper').classList.toggle('hidden', !show);
+    });
+  }
+
+</script>
+</body>
+</html>
